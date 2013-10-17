@@ -41,6 +41,35 @@ app.config(function(FacebookConfigProvider) {
 }
 ```
 
+## How to use it:
+
+All functions are asynchronous, the responses are broadcasted from the rootScope.
+
+Simply add the provider to your controller and call the functions.
+
+Example:
+```javascript
+app.controller('MyCtrl', function($scope, Facebook) {
+  $scope.doFacebookLogin = function() {
+    // Login to Facebook, with extended permission
+    Facebook.login("user_groups");
+  }
+  
+  // This has been broadcasted by Facebook.login()
+  $scope.$on('fb_statusChange', function(event, response) {
+    if (response.status == "connected") {
+      // Getting user information
+      Facebook.getInfo();
+    }
+  });
+  
+  // This has been broadcasted by Facebook.getInfo()
+  $scope.$on('fb_infos', function(event, response) {
+    $scope.user = response.user;
+  });
+});
+```
+
 ## To-do:
 * More open graph functions!
 
