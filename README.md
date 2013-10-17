@@ -1,7 +1,8 @@
-AngularJS-FacebookProvider
-==========================
+bower-angular-facebook
+======================
 
-Independent module with a set of useful functions for your AngularJS project.
+Independent module with a set of useful functions for Facebook for your AngularJS project.
+Pull requests are welcome!
 
 ## Install
 
