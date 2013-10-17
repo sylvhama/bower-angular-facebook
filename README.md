@@ -9,8 +9,8 @@ Pull requests are welcome!
 No need to insert scripts from Facebook.
 This module does all the job, it loads Facebook API and initialize your app.
 
-The event "fb_loaded" is broadcasted in the rootScope once your app is loaded.
-The event "fb_statusChange" is broadcasted in the rootScope when the user login status changes.
+* The event `fb_loaded` is broadcasted in the rootScope once your app is loaded.
+* The event `fb_statusChange` is broadcasted in the rootScope when the user login status changes.
 
 ## Install
 
