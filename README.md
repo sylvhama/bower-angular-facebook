@@ -4,6 +4,14 @@ bower-angular-facebook
 Independent module with a set of useful functions for Facebook for your AngularJS project.
 Pull requests are welcome!
 
+## Job
+
+No need to insert scripts from Facebook.
+This module does all the job, it loads Facebook API and initialize your app.
+
+The event "fb_loaded" is broadcasted in the rootScope once your app is loaded.
+The event "fb_statusChange" is broadcasted in the rootScope when the user login status changes.
+
 ## Install
 
 Install with `bower`:
