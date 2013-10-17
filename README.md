@@ -21,11 +21,20 @@ Add a `<script>` to your `index.html`:
 And add `FacebookProvider` as a dependency for your app:
 
 ```javascript
-angular.module('myApp', ['FacebookProvider']);
+app = angular.module('myApp', ['FacebookProvider']);
+```
+
+And add `FacebookConfigProvider` as a dependency for your app config:
+
+```javascript
+app.config(function(FacebookConfigProvider) {
+  FacebookConfigProvider.setAppId('220153541480548');
+  FacebookConfigProvider.setLocale('en_US'); // Optional, set to en_US by default
+}
 ```
 
 ## To-do:
-* App ID and locale should be defined outside
+* More open graph functions!
 
 ## License
 
