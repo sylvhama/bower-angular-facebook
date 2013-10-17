@@ -7,7 +7,7 @@ Pull requests are welcome!
 ## Job
 
 No need to insert scripts from Facebook.
-This module does all the job, it loads Facebook API and initialize your app.
+**This module does all the job**, it loads Facebook API and initialize your app.
 
 * The event `fb_loaded` is broadcasted in the rootScope once your app is loaded.
 * The event `fb_statusChange` is broadcasted in the rootScope when the user login status changes.
@@ -36,7 +36,7 @@ And add `FacebookConfigProvider` as a dependency for your app config:
 
 ```javascript
 app.config(function(FacebookConfigProvider) {
-  FacebookConfigProvider.setAppId('220153541480548');
+  FacebookConfigProvider.setAppId('123456789012345');
   FacebookConfigProvider.setLocale('en_US'); // Optional, set to en_US by default
 }
 ```
