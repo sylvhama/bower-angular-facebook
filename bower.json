@@ -1,0 +1,8 @@
+{
+  "name": "angular-facebook",
+  "version": "1.0",
+  "main": "./angular-facebook.js",
+  "dependencies": {
+    "angular": "*"
+  }
+}
