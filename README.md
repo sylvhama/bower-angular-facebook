@@ -8,18 +8,23 @@ Independent module with a set of useful functions for your AngularJS project.
 Install with `bower`:
 
 ```shell
-bower install git://github.com/Asiance/AngularJS-FacebookProvider.git
+bower install git://github.com/Asiance/angular-facebook.git
 ```
 
 Add a `<script>` to your `index.html`:
 
 ```html
-<script src="/bower_components/facebook-provider/facebook-provider.js"></script>
+<script src="/bower_components/angular-facebook/angular-facebook.js"></script>
 ```
 
-## TO-DO:
+And add `FacebookProvider` as a dependency for your app:
+
+```javascript
+angular.module('myApp', ['FacebookProvider']);
+```
+
+## To-do:
 * App ID and locale should be defined outside
-* Bower
 
 ## License
 
