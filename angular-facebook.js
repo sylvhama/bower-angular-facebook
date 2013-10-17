@@ -1,11 +1,34 @@
 (function() {
   'use strict';
   
-  var app,
-      appID = "XXXXXXXXXXXX",
-      locale = "en_US";
+  var app;
 
   app = angular.module("FacebookProvider", []);
+
+  app.provider('FacebookConfig', function() {
+    this.appId = '';
+    this.locale = 'en_US';
+
+    this.$get = function() {
+      var appId = this.appId;
+      var locale = this.locale;
+      return {
+        getParams: function() {
+          return {
+            appId: appId,
+            locale: locale
+          }
+        }
+      };
+    };
+
+    this.setAppId = function(appId) {
+      this.appId = appId;
+    };
+    this.setLocale = function(locale) {
+      this.locale = locale;
+    };
+  });
 
   app.factory("Facebook", function($rootScope) {
     return {
@@ -61,10 +84,11 @@
     };
   });
 
-  app.run(function($location, $rootScope) {
+  app.run(function($location, $rootScope, FacebookConfig) {
+    var config = FacebookConfig.getParams();
     window.fbAsyncInit = function() {
       FB.init({
-        appId: appID,
+        appId: config.appId,
         status: true,
         cookie: true,
         xfbml: true
@@ -88,7 +112,7 @@
       js = d.createElement("script");
       js.id = id;
       js.async = true;
-      js.src = "//connect.facebook.net/" + locale + "/all.js";
+      js.src = "//connect.facebook.net/" + config.locale + "/all.js";
       return ref.parentNode.insertBefore(js, ref);
     })(document);
   });
