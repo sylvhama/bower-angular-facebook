@@ -17,7 +17,7 @@ No need to insert scripts from Facebook.
 Install with `bower`:
 
 ```shell
-bower install git://github.com/Asiance/angular-facebook.git
+bower install git://github.com/laurent-le-graverend/bower-angular-facebook.git
 ```
 
 Add a `<script>` to your `index.html`:
