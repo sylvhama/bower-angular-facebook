@@ -1,3 +1,9 @@
+/*
+ * bower-angular-facebook
+ * (c) 2013 Laurent Le Graverend http://www.legraverend.fr
+ * License: MIT
+ */
+
 (function() {
   'use strict';
   
