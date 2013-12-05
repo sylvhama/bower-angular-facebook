@@ -147,11 +147,12 @@
         xfbml: true
       });
       $rootScope.$broadcast("fb_loaded");
-      return FB.Event.subscribe("auth.statusChange", function(response) {
+      return FB.Event.subscribe("auth.statusChange")
+      /*, function(response) {
         return $rootScope.$broadcast("fb_statusChange", {
           status: response.status
         });
-      });
+      });*/
     };
 
     return (function(d) {
