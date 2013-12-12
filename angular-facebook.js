@@ -42,7 +42,6 @@
       login: function(_scope) {
         return FB.login((function(response) {
           if (response.authResponse) {
-
             return $rootScope.$broadcast("fb_connected", {
               facebook_id: response.authResponse.userID
             });
@@ -132,6 +131,14 @@
             }
           }
         );
+      },
+
+      isInit: function() {
+        if (typeof(FB) != 'undefined' && FB != null ) {
+          return true;
+        }else {
+          return false;
+        }
       }
 
     };
@@ -147,12 +154,11 @@
         xfbml: true
       });
       $rootScope.$broadcast("fb_loaded");
-      return FB.Event.subscribe("auth.statusChange")
-      /*, function(response) {
+      return FB.Event.subscribe("auth.statusChange", function(response) {
         return $rootScope.$broadcast("fb_statusChange", {
           status: response.status
         });
-      });*/
+      });
     };
 
     return (function(d) {
