@@ -140,6 +140,25 @@
           }
         );
       },
+      addStory: function() {
+        FB.api('me/korea_tfc:complete',
+          'post',
+        {
+          itinerary: "http://samples.ogp.me/1469799196568642"
+        },
+          function(response) {
+            if (!response || response.error) {
+              return $rootScope.$broadcast("fb_action_failed",{
+                data: response
+              });
+            } else {
+              return $rootScope.$broadcast("fb_action_success",{
+                data: response
+              });
+            }
+          }
+        );
+      },
       isInit: function() {
         if (typeof(FB) != 'undefined' && FB != null ) {
           return true;
@@ -157,6 +176,21 @@
             } else {
               return $rootScope.$broadcast("fb_get_friends_success",{
                 friends: response.data
+              });
+            }
+          }
+        );
+      },
+      getLikes: function() {
+        FB.api('/me/likes',
+          function(response) {
+            if (!response || response.error) {
+              return $rootScope.$broadcast("fb_get_likes_failed",{
+                data: response
+              });
+            } else {
+              return $rootScope.$broadcast("fb_get_likes_success",{
+                likes: response.data
               });
             }
           }
