@@ -30,7 +30,7 @@
     };
   });
 
-  app.factory("Facebook", function($rootScope) {
+  app.factory("Facebook", ['$rootScope', 'FacebookConfig', function($rootScope, FacebookConfig) {
     return {
       getLoginStatus: function() {
         return FB.getLoginStatus((function(response) {
@@ -81,9 +81,24 @@
         });
       },
       addFeed: function(param) {
-        return FB.ui({ method:'feed', app_id: this.appId, redirect_ur: param.redirect_ur, from: param.from, to: param.to, link: param.link, picture: param.picture, source: param.source, name: param.name, caption: param.caption, description: param.description, ref: param.ref}, function(response){
+        var config = FacebookConfig.getParams();
+        return FB.ui({ method:'feed', app_id: config.appId, redirect_ur: param.redirect_ur, from: param.from, to: param.to, link: param.link, picture: param.picture, source: param.source, name: param.name, caption: param.caption, description: param.description, ref: param.ref
+          }, function(response){
           if (response != null) {
             return $rootScope.$broadcast("fb_post_feed_success",{
+              postID: response.post_id
+            });
+          }
+        });
+      },
+      shareLink: function(link, caption) {
+        return FB.ui({
+          method: 'feed',
+          link: link,
+          caption: caption
+        },function(response){
+          if (response != null) {
+            return $rootScope.$broadcast("fb_post_link_success",{
               postID: response.post_id
             });
           }
@@ -140,12 +155,20 @@
           }
         );
       },
-      addStory: function() {
-        FB.api('me/korea_tfc:complete',
-          'post',
-        {
-          itinerary: "http://samples.ogp.me/1469799196568642"
-        },
+      addStory: function(param) {
+        var config = FacebookConfig.getParams();
+        FB.api(
+          'me/'+ param.action,
+          'post', {
+            itinerary: {//object name
+              app_id: config.appId,
+              type: param.type,
+              title: param.title,
+              url: partam.url,
+              image: param.image,
+              description: param.description
+            }
+          },
           function(response) {
             if (!response || response.error) {
               return $rootScope.$broadcast("fb_action_failed",{
@@ -195,11 +218,14 @@
             }
           }
         );
+      },
+      getAcessToken: function() {
+        return FB.getAuthResponse()['accessToken'];
       }
     };
-  });
+  }]);
 
-  app.run(function($location, $rootScope, FacebookConfig) {
+  app.run(['$location', '$rootScope', 'FacebookConfig', function($location, $rootScope, FacebookConfig) {
     var config = FacebookConfig.getParams();
     window.fbAsyncInit = function() {
       FB.init({
@@ -208,6 +234,7 @@
         cookie: true,
         xfbml: true
       });
+      FB.Canvas.setAutoGrow();
       $rootScope.$broadcast("fb_loaded");
       return FB.Event.subscribe("auth.statusChange", function(response) {
         return $rootScope.$broadcast("fb_statusChange", {
@@ -230,5 +257,5 @@
       js.src = "//connect.facebook.net/" + config.locale + "/all.js";
       return ref.parentNode.insertBefore(js, ref);
     })(document);
-  });
+  }]);
 }).call(this);
