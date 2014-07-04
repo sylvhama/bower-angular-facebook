@@ -1,6 +1,6 @@
 (function() {
   'use strict';
-  
+
   var app;
 
   app = angular.module("FacebookProvider", []);
@@ -32,195 +32,95 @@
 
   app.factory("Facebook", ['$rootScope', 'FacebookConfig', function($rootScope, FacebookConfig) {
     return {
-      getLoginStatus: function() {
-        return FB.getLoginStatus((function(response) {
-          return $rootScope.$broadcast("fb_statusChange", {
-            status: response.status
-          });
-        }), true);
-      },
-      login: function(_scope) {
-        return FB.login((function(response) {
-          if (response.authResponse) {
-            return $rootScope.$broadcast("fb_connected", {
-              facebook_id: response.authResponse.userID
-            });
-          } else {
-            return $rootScope.$broadcast("fb_login_failed");
+      login: function(scope) {
+        FB.login(
+          function(response) {
+            if (response.authResponse) {
+              return $rootScope.$broadcast("fb_Login_success", response);
+            } else {
+              return $rootScope.$broadcast("fb_login_failed");
+            }
+          },
+          {
+            scope: scope
           }
-        }), {
-          scope: _scope
-        });
+        );
       },
+
       logout: function() {
         return FB.logout(function(response) {
-          if (response) {
-            return $rootScope.$broadcast("fb_logout_succeded");
-          } else {
-            return $rootScope.$broadcast("fb_logout_failed");
-          }
+          return $rootScope.$broadcast("fb_logout", response);
         });
       },
+
+      getLoginStatus: function() {
+        FB.getLoginStatus(function(response) {
+          return $rootScope.$broadcast("fb_statusChange", response);
+        });
+      },
+
       getInfo: function() {
         return FB.api("/me", function(response) {
-          return $rootScope.$broadcast("fb_infos", {
-            user: response
-          });
+          return $rootScope.$broadcast("fb_infos", response);
         });
       },
-      getGroupFeed: function(id) {
-        return FB.api("/" + id + "/feed", { limit: 25 }, function(response) {
-          return $rootScope.$broadcast("fb_get_group_feed", {
-            group_feed: response
-          });
+
+      getFriends: function() {
+        return FB.api("/me/friends", function(response) {
+          return $rootScope.$broadcast("fb_friends", response);
         });
       },
-      unsubscribe: function() {
-        return FB.api("/me/permissions", "DELETE", function(response) {
-          return $rootScope.$broadcast("fb_get_login_status");
-        });
-      },
-      addFeed: function(param) {
-        var config = FacebookConfig.getParams();
-        return FB.ui({ method:'feed', app_id: config.appId, redirect_ur: param.redirect_ur, from: param.from, to: param.to, link: param.link, picture: param.picture, source: param.source, name: param.name, caption: param.caption, description: param.description, ref: param.ref
-          }, function(response){
-          if (response != null) {
-            return $rootScope.$broadcast("fb_post_feed_success",{
-              postID: response.post_id
-            });
+
+      shareLink: function(href) {
+        FB.ui({
+          method: 'share',
+          href: href
+        }, function(response){
+          if (typeof(response) != 'undefined') {
+            return $rootScope.$broadcast("fb_share_link", response);
+          }else {
+            return $rootScope.$broadcast("fb_share_link_failed");
           }
         });
       },
-      shareLink: function(link, caption) {
-        return FB.ui({
-          method: 'feed',
-          link: link,
-          caption: caption
-        },function(response){
-          if (response != null) {
-            return $rootScope.$broadcast("fb_post_link_success",{
-              postID: response.post_id
-            });
-          }
+
+      shareOG: function(action_type, action_properties) {
+        FB.ui({
+          method: 'share_open_graph',
+          action_type: action_type,
+          action_properties: action_properties
+        }, function(response){
+          return $rootScope.$broadcast("fb_share_og", response);
         });
       },
-      addPhoto: function(message,img,tags) {
-        FB.api('me/photos','post',
-          {
-            message: message,
-            url: img
-          },
-          function(response) {
-            if (!response || response.error) {
-              $rootScope.$broadcast("fb_post_photo_failed",{
-                data: response
-              });
-            } else {
-              var postId = response.id;
-              $rootScope.$broadcast("fb_post_photo_sucess",{
-                data: response
-              });
-              if(tags.length > 0) {
-                FB.api(postId+'/tags?tags='+JSON.stringify(tags), 'post', function(response){
-                  if (!response || response.error) {
-                    return $rootScope.$broadcast("fb_tag_photo_failed",{
-                      data: response
-                    });
-                  } else {
-                    return $rootScope.$broadcast("fb_tag_photo_success",{
-                      data: response
-                    });
-                  }
-                });
-              }
-            }
-          }
-        );
-      },
-      addPost: function(message) {
-        FB.api('me/feed','post',
-          {
-            message: message
-          },
-          function(response) {
-            if (!response || response.error) {
-              return $rootScope.$broadcast("fb_post_failed",{
-                data: response
-              });
-            } else {
-              return $rootScope.$broadcast("fb_post_success",{
-                data: response
-              });
-            }
-          }
-        );
-      },
-      addStory: function(param) {
+
+      addStory: function(type, title, description, image) {
         var config = FacebookConfig.getParams();
         FB.api(
-          'me/'+ param.action,
-          'post', {
-            itinerary: {//object name
+          "/me/finnair_summer_story:vote_for",
+          "POST", {
+            story: {
               app_id: config.appId,
-              type: param.type,
-              title: param.title,
-              url: partam.url,
-              image: param.image,
-              description: param.description
+              type: type,
+              title: title,
+              description: description,
+              image: image
             }
-          },
-          function(response) {
-            if (!response || response.error) {
-              return $rootScope.$broadcast("fb_action_failed",{
-                data: response
-              });
-            } else {
-              return $rootScope.$broadcast("fb_action_success",{
-                data: response
-              });
-            }
+          }, function(response){
+          if(response.error) {
+            return $rootScope.$broadcast("fb_add_story_failed", response);
+          }else {
+            return $rootScope.$broadcast("fb_add_story_success", response);
           }
-        );
+        });
       },
+
       isInit: function() {
         if (typeof(FB) != 'undefined' && FB != null ) {
           return true;
         }else {
           return false;
         }
-      },
-      getFriends: function() {
-        FB.api('/me/friends',
-          function(response) {
-            if (!response || response.error) {
-              return $rootScope.$broadcast("fb_get_friends_failed",{
-                data: response
-              });
-            } else {
-              return $rootScope.$broadcast("fb_get_friends_success",{
-                friends: response.data
-              });
-            }
-          }
-        );
-      },
-      getLikes: function() {
-        FB.api('/me/likes',
-          function(response) {
-            if (!response || response.error) {
-              return $rootScope.$broadcast("fb_get_likes_failed",{
-                data: response
-              });
-            } else {
-              return $rootScope.$broadcast("fb_get_likes_success",{
-                likes: response.data
-              });
-            }
-          }
-        );
-      },
-      getAcessToken: function() {
-        return FB.getAuthResponse()['accessToken'];
       }
     };
   }]);
@@ -229,33 +129,26 @@
     var config = FacebookConfig.getParams();
     window.fbAsyncInit = function() {
       FB.init({
-        appId: config.appId,
-        status: true,
-        cookie: true,
-        xfbml: true
+        appId      : config.appId,
+        cookie     : true,  // enable cookies to allow the server to access
+        // the session
+        xfbml      : true,  // parse social plugins on this page
+        version    : 'v2.0' // use version 2.0
       });
       FB.Canvas.setAutoGrow();
-      $rootScope.$broadcast("fb_loaded");
-      return FB.Event.subscribe("auth.statusChange", function(response) {
-        return $rootScope.$broadcast("fb_statusChange", {
-          status: response.status
-        });
+      FB.getLoginStatus(function(response) {
+        return $rootScope.$broadcast("fb_statusChange", response);
       });
-    };
+      $rootScope.$broadcast("fb_loaded");
+    }
 
-    return (function(d) {
-      var id, js, ref;
-      js = void 0;
-      id = "facebook-jssdk";
-      ref = d.getElementsByTagName("script")[0];
-      if (d.getElementById(id)) {
-        return;
-      }
-      js = d.createElement("script");
-      js.id = id;
-      js.async = true;
-      js.src = "//connect.facebook.net/" + config.locale + "/all.js";
-      return ref.parentNode.insertBefore(js, ref);
-    })(document);
+    return (function(d, s, id) {
+      var js, fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) return;
+      js = d.createElement(s); js.id = id;
+      js.src = "//connect.facebook.net/" + config.locale + "/sdk.js";
+      fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));
+
   }]);
 }).call(this);
